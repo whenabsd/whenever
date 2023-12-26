@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace 命名空间 -->
+<mapper namespace="com.xjs.cvs.mapper.UserMapper">
+
+    <resultMap id="userResultMap" type="User">
+        <id property="id" column="id" />
+        <result property="account" column="account"/>
+        <result property="realName" column="realName"/>
+        <result property="password" column="password"/>
+        <result property="sex" column="sex"/>
+        <result property="age" column="age"/>
+        <result property="birthday" column="birthday"/>
+        <result property="phone" column="phone"/>
+        <result property="address" column="address"/>
+        <result property="roleId" column="roleId"/>
+        <result property="createUserId" column="createUserId"/>
+        <result property="updateUserId" column="updateUserId"/>
+        <result property="createDateTime" column="createDateTime"/>
+        <result property="updateDateTime" column="updateDateTime"/>
+        <result property="idPicPath" column="idPicPath"/>
+        <result property="workPicPath" column="workPicPath"/>
+        <association property="role" javaType="Role">
+            <id property="id" column="id" />
+            <result property="code" column="code"/>
+            <result property="roleName" column="roleName"/>
+            <result property="createUserId" column="createUserId"/>
+            <result property="createDateTime" column="createDateTime"/>
+            <result property="updateUserId" column="updateUserId"/>
+            <result property="updateDateTime" column="updateDateTime"/>
+        </association>
+    </resultMap>
+
+    <update id="updateUserPwd">
+        update t_sys_user
+        set password = #{password}
+        where id = #{id}
+    </update>
+
+
+    <select id="findUser" resultType="User">
+        select * from t_sys_user
+        <where>
+            1=1
+            <if test="account!=null and account!=''">
+                and   account = #{account}
+            </if>
+            <if test="password!=null and password!=''">
+                and  password = #{password}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="findUserByAccount" resultType="User">
+        select * from t_sys_user
+        <where>
+            <if test="account!=null and account!=''">
+                account = #{account}
+            </if>
+        </where>
+    </select>
+
+
+    <select id="findAllUsers" resultMap="userResultMap">
+        select u.*,r.*
+        from t_sys_user u inner join t_sys_role r
+        on u.roleId = r.id
+        <where>
+            1=1
+            <if test="realName!=null and realName!= ''">
+                and realName like concat ('%',#{realName},'%')
+            </if>
+            <if test="roleId!=null and roleId &gt; 0 ">
+                and roleId = #{roleId}
+            </if>
+        </where>
+        order by u.createDateTime desc
+    </select>
+
+
+    <select id="findUserById" resultMap="userResultMap">
+        select u.*,r.*
+        from t_sys_user u inner join t_sys_role r
+        on u.roleId = r.id
+        where u.id = #{id}
+    </select>
+
+    <!--添加用户信息-->
+    <insert id="insertUser" >
+        insert into t_sys_user (id,account,realName,password,sex,age,birthday,phone,
+                                address,roleId,createUserId,createDateTime,updateUserId,
+                                updateDateTime,idPicPath,workPicPath)
+        values(default,#{account},#{realName},#{password},#{sex},#{age},#{birthday},#{phone},
+               #{address},#{roleId},#{createUserId},#{createDateTime},#{updateUserId},
+               #{updateDateTime},#{idPicPath},#{workPicPath})
+    </insert>
+
+
+    <delete id="deleteUserById">
+        delete from t_sys_user where id = #{id}
+    </delete>
+
+
+    <update id="updateUser">
+        update t_sys_user
+        <trim prefix="set" suffixOverrides="," suffix="where id = #{id}">
+            <if test="account !=null">
+                account = #{account},
+            </if>
+            <if test="realName !=null">
+                realName = #{realName},
+            </if>
+
+
+            <if test="password !=null">
+                password = #{password},
+            </if>
+
+            <if test="sex !=null">
+                sex = #{sex},
+            </if>
+
+            <if test="age !=null">
+                age = #{age},
+            </if>
+
+            <if test="birthday !=null">
+                birthday = #{birthday},
+            </if>
+
+            <if test="phone !=null">
+                phone = #{phone},
+            </if>
+
+            <if test="address !=null">
+                address = #{address},
+            </if>
+
+            <if test="roleId !=null">
+                roleId = #{roleId},
+            </if>
+
+            <if test="createUserId !=null">
+                createUserId = #{createUserId},
+            </if>
+
+            <if test="createDateTime !=null">
+                createDateTime = #{createDateTime},
+            </if>
+
+            <if test="updateUserId !=null">
+                updateUserId = #{updateUserId},
+            </if>
+
+            <if test="updateDateTime !=null">
+                updateDateTime = #{updateDateTime},
+            </if>
+
+            <if test="idPicPath !=null">
+                idPicPath = #{idPicPath},
+            </if>
+
+            <if test="workPicPath !=null">
+                workPicPath = #{workPicPath},
+            </if>
+        </trim>
+    </update>
+
+
+</mapper>

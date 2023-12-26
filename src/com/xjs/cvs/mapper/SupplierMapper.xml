@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace 命名空间 -->
+<mapper namespace="com.xjs.cvs.mapper.SupplierMapper">
+    <!--结果映射  主要使用在查询操作   多条联合查询-->
+    <resultMap id="supResultMap" type="Supplier">
+        <id property="id" column="id"  />
+        <result property="supCode" column="supCode"/>
+        <result property="supName" column="supName"/>
+        <result property="supDesc" column="supDesc"/>
+        <result property="supContact" column="supContact"/>
+        <result property="supPhone" column="supPhone"/>
+        <result property="supAddress" column="supAddress"/>
+        <result property="supFax" column="supFax"/>
+        <result property="createdUserId" column="createdUserId"/>
+        <result property="createdTime" column="createdTime"/>
+        <result property="updatedUserId" column="updatedUserId"/>
+        <result property="updatedTime" column="updatedTime"/>
+        <result property="companyLicPicPath" column="companyLicPicPath"/>
+        <result property="orgCodePicPath" column="orgCodePicPath"/>
+        <association property="user" javaType="User">
+            <id property="id" column="id" />
+            <result property="account" column="account"/>
+            <result property="realName" column="realName"/>
+            <result property="password" column="password"/>
+            <result property="sex" column="sex"/>
+            <result property="age" column="age"/>
+            <result property="birthday" column="birthday"/>
+            <result property="phone" column="phone"/>
+            <result property="address" column="address"/>
+            <result property="roleId" column="roleId"/>
+            <result property="createUserId" column="createUserId"/>
+            <result property="updateUserId" column="updateUserId"/>
+            <result property="createDateTime" column="createDateTime"/>
+            <result property="updateDateTime" column="updateDateTime"/>
+            <result property="idPicPath" column="idPicPath"/>
+            <result property="workPicPath" column="workPicPath"/>
+        </association>
+    </resultMap>
+
+    <!--带条件查询全部-->
+    <select id="selectAllSuppliers" resultMap="supResultMap">
+        select s.* ,u.*
+        from t_supplier s inner join t_sys_user u
+        on s.createdUserId = u.id
+        <where>
+            1=1
+            <if test="supCode!=null and supCode!=''">
+                and supCode like CONCAT('%',#{supCode},'%')
+            </if>
+            <if test="supName!=null and supName!=''" >
+                and supName like CONCAT( '%',#{supName},'%')
+            </if>
+        </where>
+        order by s.createdTime desc
+    </select>
+
+    <!--根据id查询supplier-->
+    <select id="selectSupById" resultMap="supResultMap">
+        select s.* ,u.*
+        from t_supplier s inner join t_sys_user u
+        on s.createdUserId = u.id
+        <where>
+            <if test="id!=null">
+                s.id = #{id}
+            </if>
+        </where>
+    </select>
+
+    <!--添加供货商信息-->
+    <insert id="insertSupplier">
+        insert into t_supplier (id,supCode,supName,supDesc,supContact,supPhone,
+                                supAddress,supFax,createdUserId,createdTime,
+                                updatedUserId,updatedTime,companyLicPicPath,orgCodePicPath)
+        values(default,#{supCode},#{supName},#{supDesc},#{supContact},#{supPhone},
+               #{supAddress},#{supFax},#{createdUserId},#{createdTime},
+               #{updatedUserId},#{updatedTime},#{companyLicPicPath},#{orgCodePicPath})
+    </insert>
+
+    <!--修改供货商信息-->
+    <update id="updateSupplier">
+        update t_supplier
+        <trim prefix="set" suffixOverrides="," suffix="where id=#{id}">
+            <if test="supCode!=null">supCode=#{supCode},</if>
+            <if test="supName!=null">supName=#{supName},</if>
+            <if test="supDesc!=null">supDesc=#{supDesc},</if>
+            <if test="supContact!=null">supContact=#{supContact},</if>
+            <if test="supPhone!=null">supPhone=#{supPhone},</if>
+            <if test="supAddress!=null">supAddress=#{supAddress},</if>
+            <if test="supFax!=null">supFax=#{supFax},</if>
+            <if test="createdUserId!=null">createdUserId=#{createdUserId},</if>
+            <if test="createdTime!=null">createdTime=#{createdTime},</if>
+            <if test="updatedUserId!=null">updatedUserId=#{updatedUserId},</if>
+            <if test="updatedTime!=null">updatedTime=#{updatedTime},</if>
+            <if test="companyLicPicPath!=null">companyLicPicPath=#{companyLicPicPath},</if>
+            <if test="orgCodePicPath!=null">orgCodePicPath=#{orgCodePicPath},</if>
+        </trim>
+    </update>
+
+    <!--删除供货商-->
+    <delete id="deleteSupById">
+        delete from t_supplier
+        where id = #{id}
+    </delete>
+</mapper>
